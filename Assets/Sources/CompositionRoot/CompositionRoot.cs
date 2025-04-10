@@ -14,7 +14,7 @@ public class CompositionRoot : MonoBehaviour
         _serverRequestQueue = serverRequestQueue;
     }
 
-    private async void Start()
+    private async void Startt()
     {
         Debug.Log("start");
         try
