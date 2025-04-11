@@ -17,19 +17,28 @@ namespace Sources.UI.Weather
         private void Construct(IWeatherPresetner weatherPresetner) =>
             _weatherPresenter = weatherPresetner;
 
-        private void Start()
-        {
-            Hide();
-        }
+        private void Start() =>
+            _weatherPresenter.ActiveChanged += OnActiveChanged;
 
-        public void Show()
+        private void OnDestroy() =>
+            _weatherPresenter.ActiveChanged -= OnActiveChanged;
+
+        private void OnActiveChanged(bool isActive)
+        {
+            if(isActive)
+                Show();
+            else
+                Hide();
+        }
+        
+        private void Show()
         {
             _canvas.enabled = true;
 
             _weatherPresenter.InfoChanged += OnInfoChanged;
         }
 
-        public void Hide()
+        private void Hide()
         {
             _canvas.enabled = false;
 
