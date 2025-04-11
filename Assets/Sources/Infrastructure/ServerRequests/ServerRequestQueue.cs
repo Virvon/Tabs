@@ -11,10 +11,11 @@ namespace Sources.Infrastructure.ServerRequests
 {
     public class ServerRequestQueue : IInitializable, IDisposable
     {
-        private Queue<ServerRequest> _requestQueue = new();
         private readonly Subject<ServerRequest> _requestSubject = new();
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
+        private Queue<ServerRequest> _requestQueue = new();
+        
         private bool _isProcessing;
         private ServerRequest _currentRequest;
 
@@ -45,11 +46,8 @@ namespace Sources.Infrastructure.ServerRequests
         
         public void CancelRequest(ServerRequest request)
         {
-            Debug.Log("cancle");
-            // Если запрос текущий
             if (_currentRequest == request)
             {
-                Debug.Log("cancle current");
                 _currentRequest.Cancel();
                 _currentRequest = null;
                 ProcessNextRequest(); 

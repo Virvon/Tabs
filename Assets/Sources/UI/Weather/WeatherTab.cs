@@ -47,7 +47,6 @@ namespace Sources.UI.Weather
 
         private void OnInfoChanged(string name, string temperature, string shortForecast)
         {
-            Debug.Log("info changed");
             _nameText.text = name;
             _temperatureText.text = temperature;
         }

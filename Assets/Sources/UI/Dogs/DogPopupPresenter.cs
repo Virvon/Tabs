@@ -16,10 +16,10 @@ namespace Sources.UI.Dogs
         }
 
         public void Initialize() =>
-            _dogsModel.InfoLoaded += OnInfoLoaded;
+            _dogsModel.DogInfoLoaded += OnInfoLoaded;
 
         public void Dispose() =>
-            _dogsModel.InfoLoaded -= OnInfoLoaded;
+            _dogsModel.DogInfoLoaded -= OnInfoLoaded;
 
         private void OnInfoLoaded(string name, string description)
         {

@@ -15,7 +15,6 @@ namespace Sources.Infrastructure.Dogs
         private readonly string _id;
         private readonly ServerRequestQueue _requestQueue;
 
-        private bool _isLoaded;
         private ServerRequest _request;
 
         public DogCell(string name, string id, ServerRequestQueue requestQueue)
@@ -23,43 +22,45 @@ namespace Sources.Infrastructure.Dogs
             Name = name;
             _id = id;
             _requestQueue = requestQueue;
-
-            _isLoaded = false;
         }
 
         public event Action<DogCell> LoadStarted;
         public event Action<DogCell, string> LoadFinished;
+        public event Action LoadCanceled; 
 
         public void LoadDogInfo()
         {
-            if(_isLoaded)
+            if(_request != null)
                 return;
-
             
             LoadStarted?.Invoke(this);
             Load().Forget();
         }
+        
+        public void CancelLoading()
+        {
+            if(_request == null)
+                return;
+            
+            _requestQueue.CancelRequest(_request);
+            _request = null;
+        }
 
         private async UniTaskVoid Load()
         {
-            _isLoaded = true;
-
             using (UnityWebRequest webRequest =
                    UnityWebRequest.Get($"https://dogapi.dog/api/v2/breeds/{_id}"))
             {
                 _request = new(webRequest);
                 
                 string jsonResponse = await _requestQueue.EnqueueRequest(_request);
-                
-                Debug.Log("succsess " + jsonResponse);
+
+                _request = null;
 
                 BreedResponse breedResponse = JsonUtility.FromJson<BreedResponse>(jsonResponse);
-                Debug.Log(breedResponse.data.attributes.description);
                 
                 LoadFinished?.Invoke(this, breedResponse.data.attributes.description);
             }
-            
-            _isLoaded = false;
         }
         
         [Serializable]

@@ -1,37 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Sources.Infrastructure.ServerRequests;
 using UnityEngine;
 using UnityEngine.Networking;
-using Zenject;
 
 namespace Sources.Infrastructure.Dogs
 {
-    public class DogsModel : IInitializable
+    public class DogsModel
     {
         private readonly ServerRequestQueue _requestQueue;
-        private readonly List<ServerRequest> _requests = new();
 
         private List<DogCell> _cells;
+        private ServerRequest _updateListRequest;
+        private DogCell _currentLoadingDogCell;
 
         public DogsModel(ServerRequestQueue requestQueue)
         {
             _requestQueue = requestQueue;
         }
 
-        public event Action<IReadOnlyList<DogCell>> Setuped;
-        public event Action<string, string> InfoLoaded; 
-
-        public async void Initialize()
+        public event Action<IReadOnlyList<DogCell>> ListUpdated;
+        public event Action ListUpdateStarted;
+        public event Action<string, string> DogInfoLoaded; 
+        
+        public async UniTaskVoid UpdateInfo()
         {
+            ListUpdateStarted?.Invoke();
+
             using (UnityWebRequest webRequest =
                    UnityWebRequest.Get("https://dogapi.dog/api/v2/breeds"))
             {
-                ServerRequest request = new(webRequest);
-                _requests.Add(request);
+                _updateListRequest = new(webRequest);
                 
-                string jsonResponse = await _requestQueue.EnqueueRequest(request);
+                string jsonResponse = await _requestQueue.EnqueueRequest(_updateListRequest);
+                _updateListRequest = null;
                 
                 BreedsResponse breedsResponse = JsonUtility.FromJson<BreedsResponse>(jsonResponse);
 
@@ -44,17 +48,50 @@ namespace Sources.Infrastructure.Dogs
                 dogCell.LoadFinished += OnLoadFinished;
             }
             
-            Setuped?.Invoke(_cells);
+            ListUpdated?.Invoke(_cells);
+        }
+        
+        public void Stop()
+        {
+            if (_updateListRequest != null)
+            {
+                _requestQueue.CancelRequest(_updateListRequest);
+                _updateListRequest = null;
+            }
+
+            if (_currentLoadingDogCell != null)
+            {
+                _currentLoadingDogCell.CancelLoading();
+                _currentLoadingDogCell = null;
+            }
+
+            if (_cells != null)
+            {
+                foreach (DogCell dogCell in _cells)
+                {
+                    dogCell.LoadStarted -= LoadDog;
+                    dogCell.LoadFinished -= OnLoadFinished;
+                }
+            
+                _cells.Clear();
+            }
         }
 
         private void OnLoadFinished(DogCell dogCell, string description)
         {
-            InfoLoaded?.Invoke(dogCell.Name, description);
+            DogInfoLoaded?.Invoke(dogCell.Name, description);
+            _currentLoadingDogCell = null;
         }
 
         private void LoadDog(DogCell dogCell)
         {
-            
+            if(_currentLoadingDogCell == dogCell)
+                return;
+
+            if (_currentLoadingDogCell != null)
+                _currentLoadingDogCell.CancelLoading();
+
+            _currentLoadingDogCell = dogCell;
         }
 
         [Serializable]

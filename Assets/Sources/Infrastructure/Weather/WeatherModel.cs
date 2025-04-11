@@ -72,8 +72,6 @@ namespace Sources.Infrastructure.Weather
                 string jsonResponse = await _requestQueue.EnqueueRequest(request);
                 _requests.Remove(request);
                 
-                Debug.Log("succsess " + jsonResponse);
-
                 WeatherForecast forecast = JsonUtility.FromJson<WeatherForecast>(jsonResponse);
 
                 if (forecast.properties != null && forecast.properties.periods != null)
