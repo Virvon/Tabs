@@ -14,11 +14,11 @@ namespace Sources.UI.Weather
         private IWeatherPresetner _weatherPresenter;
 
         [Inject]
-        private void Construct(IWeatherPresetner weatherPresetner) =>
+        private void Construct(IWeatherPresetner weatherPresetner)
+        {
             _weatherPresenter = weatherPresetner;
-
-        private void Start() =>
             _weatherPresenter.ActiveChanged += OnActiveChanged;
+        }
 
         private void OnDestroy() =>
             _weatherPresenter.ActiveChanged -= OnActiveChanged;

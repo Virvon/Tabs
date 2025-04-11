@@ -75,7 +75,6 @@ namespace Sources.Infrastructure.ServerRequests
 
         private void ProcessNextRequest()
         {
-            Debug.Log("process next " + _requestQueue.Count);
             if (_requestQueue.Count == 0)
             {
                 _isProcessing = false;

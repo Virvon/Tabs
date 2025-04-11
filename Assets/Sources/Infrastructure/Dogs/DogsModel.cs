@@ -33,9 +33,7 @@ namespace Sources.Infrastructure.Dogs
                 
                 string jsonResponse = await _requestQueue.EnqueueRequest(request);
                 
-                Debug.Log("succsess " + jsonResponse);
                 BreedsResponse breedsResponse = JsonUtility.FromJson<BreedsResponse>(jsonResponse);
-                Debug.Log(breedsResponse.data.Length);
 
                 _cells = breedsResponse.data.Select(value => new DogCell(value.attributes.name, value.id, _requestQueue)).ToList();
             }

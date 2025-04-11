@@ -1,6 +1,7 @@
 using System;
 using Sources.Infrastructure.Weather;
 using Sources.UI.TabsMediator;
+using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
@@ -34,12 +35,14 @@ namespace Sources.UI.Weather
         {
             Button.interactable = false;
             ActiveChanged?.Invoke(true);
+            _weatherModel.UpdateInfo();
         }
 
         public override void HideTab()
         {
             Button.interactable = true;
             ActiveChanged?.Invoke(false);
+            _weatherModel.StopUpdate();
         }
 
         private void OnInfoChanged(string name, string temperature, string shortForecast) =>

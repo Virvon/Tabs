@@ -17,18 +17,23 @@ namespace Sources.Infrastructure.Weather
         private readonly List<ServerRequest> _requests;
 
         private float passedTime;
+        private bool _isWork;
 
         public WeatherModel(ServerRequestQueue requestQueue)
         {
             _requestQueue = requestQueue;
 
             _requests = new();
+            _isWork = false;
         }
 
         public event Action<string, string, string> InfoChanged;
 
         public void Tick()
         {
+            if(_isWork == false)
+                return;
+            
             passedTime += Time.deltaTime;
 
             if (passedTime >= RequestCooldown)
@@ -37,6 +42,22 @@ namespace Sources.Infrastructure.Weather
                 
                 SendRequest().Forget();
             }
+        }
+        
+        public void UpdateInfo()
+        {
+            passedTime = RequestCooldown;
+            _isWork = true;
+        }
+
+        public void StopUpdate()
+        {
+            _isWork = false;
+
+            foreach (ServerRequest request in _requests)
+                _requestQueue.CancelRequest(request);
+            
+            _requests.Clear();
         }
 
         private async UniTaskVoid SendRequest()
@@ -49,12 +70,13 @@ namespace Sources.Infrastructure.Weather
                 _requests.Add(request);
                 
                 string jsonResponse = await _requestQueue.EnqueueRequest(request);
+                _requests.Remove(request);
                 
                 Debug.Log("succsess " + jsonResponse);
-                
+
                 WeatherForecast forecast = JsonUtility.FromJson<WeatherForecast>(jsonResponse);
-                
-                if (forecast.properties.periods != null)
+
+                if (forecast.properties != null && forecast.properties.periods != null)
                 {
                     var period = forecast.properties.periods.Last();
                     
@@ -64,17 +86,17 @@ namespace Sources.Infrastructure.Weather
         }
         
         [Serializable]
-        private struct WeatherForecast
+        private class WeatherForecast
         {
             public WeatherProperties properties;
     
             [Serializable]
-            public struct WeatherProperties
+            public class WeatherProperties
             {
                 public WeatherPeriod[] periods;
         
                 [Serializable]
-                public struct WeatherPeriod
+                public class WeatherPeriod
                 {
                     public string name;
                     public int temperature;
