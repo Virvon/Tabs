@@ -20,7 +20,8 @@ namespace Sources.Infrastructure.Dogs
             _requestQueue = requestQueue;
         }
 
-        public event Action<IReadOnlyList<DogCell>> Setuped; 
+        public event Action<IReadOnlyList<DogCell>> Setuped;
+        public event Action<string, string> InfoLoaded; 
 
         public async void Initialize()
         {
@@ -36,12 +37,28 @@ namespace Sources.Infrastructure.Dogs
                 BreedsResponse breedsResponse = JsonUtility.FromJson<BreedsResponse>(jsonResponse);
                 Debug.Log(breedsResponse.data.Length);
 
-                _cells = breedsResponse.data.Select(value => new DogCell(value.attributes.name)).ToList();
+                _cells = breedsResponse.data.Select(value => new DogCell(value.attributes.name, value.id, _requestQueue)).ToList();
+            }
+
+            foreach (DogCell dogCell in _cells)
+            {
+                dogCell.LoadStarted += LoadDog;
+                dogCell.LoadFinished += OnLoadFinished;
             }
             
             Setuped?.Invoke(_cells);
         }
-        
+
+        private void OnLoadFinished(DogCell dogCell, string description)
+        {
+            InfoLoaded?.Invoke(dogCell.Name, description);
+        }
+
+        private void LoadDog(DogCell dogCell)
+        {
+            
+        }
+
         [Serializable]
         private class BreedsResponse
         {

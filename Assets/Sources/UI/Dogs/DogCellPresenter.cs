@@ -13,9 +13,7 @@ namespace Sources.UI.Dogs
 
         public string Name => _dogCell.Name;
 
-        public void OnClicked()
-        {
-            throw new System.NotImplementedException();
-        }
+        public void OnClicked() =>
+            _dogCell.LoadDogInfo();
     }
 }

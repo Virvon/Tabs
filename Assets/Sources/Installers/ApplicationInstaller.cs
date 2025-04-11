@@ -15,6 +15,7 @@ namespace Sources.Installers
         [SerializeField] private DogListView _dogListView;
         [SerializeField] private Button _weatherButton;
         [SerializeField] private Button _dogsButton;
+        [SerializeField] private DogPopup _dogPopup;
         
         public override void InstallBindings()
         {
@@ -24,6 +25,7 @@ namespace Sources.Installers
             Container.BindInterfacesAndSelfTo<DogsModel>().AsSingle();
             Container.BindInterfacesAndSelfTo<DogsPresenter>().AsSingle().WithArguments(_dogListView, _dogsButton);
             Container.BindInterfacesTo<Mediator>().AsSingle().NonLazy();
+            Container.BindInterfacesTo<DogPopupPresenter>().AsSingle().WithArguments(_dogPopup).NonLazy();
         }
     }
 }
