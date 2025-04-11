@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
-using UnityEngine;
 using UnityEngine.Networking;
 using Zenject;
 
@@ -86,23 +84,20 @@ namespace Sources.Infrastructure.ServerRequests
         private async UniTask ProcessRequest(ServerRequest request)
         {
             _currentRequest = request;
+            
             try
             {
                 await request.WebRequest.SendWebRequest()
                     .ToUniTask(cancellationToken: request.CancellationTokenSource.Token);
 
                 if (request.WebRequest.result == UnityWebRequest.Result.Success)
-                {
                     request.CompletionSource.TrySetResult(request.WebRequest.downloadHandler.text);
-                }
                 else
-                {
                     request.CompletionSource.TrySetException(new Exception(request.WebRequest.error));
-                }
             }
             catch (OperationCanceledException)
             {
-                request.CompletionSource.TrySetCanceled();
+                _currentRequest.CompletionSource.TrySetCanceled();
             }
             finally
             {

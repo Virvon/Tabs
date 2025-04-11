@@ -11,6 +11,8 @@ namespace Sources.Infrastructure.Weather
 {
     public class WeatherModel : ITickable
     {
+        private const string URL = "https://api.weather.gov/gridpoints/TOP/32,81/forecast";
+        
         private const int RequestCooldown = 5;
 
         private readonly ServerRequestQueue _requestQueue;
@@ -63,7 +65,7 @@ namespace Sources.Infrastructure.Weather
         private async UniTaskVoid SendRequest()
         {
             using (UnityWebRequest webRequest =
-                   UnityWebRequest.Get("https://api.weather.gov/gridpoints/TOP/32,81/forecast"))
+                   UnityWebRequest.Get(URL))
             {
                 webRequest.SetRequestHeader("User-Agent", "UnityWeatherApp/1.0 (your@email.com)");
                 ServerRequest request = new(webRequest);

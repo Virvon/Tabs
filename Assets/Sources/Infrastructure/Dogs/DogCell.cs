@@ -10,6 +10,8 @@ namespace Sources.Infrastructure.Dogs
 {
     public class DogCell
     {
+        private const string URL = "https://dogapi.dog/api/v2/breeds/";
+        
         public readonly string Name;
 
         private readonly string _id;
@@ -49,7 +51,7 @@ namespace Sources.Infrastructure.Dogs
         private async UniTaskVoid Load()
         {
             using (UnityWebRequest webRequest =
-                   UnityWebRequest.Get($"https://dogapi.dog/api/v2/breeds/{_id}"))
+                   UnityWebRequest.Get($"{URL}{_id}"))
             {
                 _request = new(webRequest);
                 

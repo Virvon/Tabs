@@ -21,10 +21,8 @@ namespace Sources.Infrastructure.ServerRequests
 
         public void Cancel()
         {
-            Debug.Log("cancel");
             if (!CompletionSource.Task.Status.IsCompleted())
             {
-                Debug.Log("abort");
                 WebRequest.Abort();
                 CompletionSource.TrySetCanceled();
                 CancellationTokenSource.Cancel();

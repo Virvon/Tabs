@@ -10,6 +10,8 @@ namespace Sources.Infrastructure.Dogs
 {
     public class DogsModel
     {
+        private const string URL = "https://dogapi.dog/api/v2/breeds";
+        
         private readonly ServerRequestQueue _requestQueue;
 
         private List<DogCell> _cells;
@@ -30,7 +32,7 @@ namespace Sources.Infrastructure.Dogs
             ListUpdateStarted?.Invoke();
 
             using (UnityWebRequest webRequest =
-                   UnityWebRequest.Get("https://dogapi.dog/api/v2/breeds"))
+                   UnityWebRequest.Get(URL))
             {
                 _updateListRequest = new(webRequest);
                 
