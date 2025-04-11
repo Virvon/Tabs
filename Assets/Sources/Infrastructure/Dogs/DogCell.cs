@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using Cysharp.Threading.Tasks;
-using Sources.CompositionRoot;
 using Sources.Infrastructure.ServerRequests;
 using UnityEngine;
 using UnityEngine.Networking;

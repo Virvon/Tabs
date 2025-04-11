@@ -24,7 +24,7 @@ namespace Sources.Installers
             Container.BindInterfacesAndSelfTo<WeatherPresenter>().AsSingle().WithArguments(_weatherButton);
             Container.BindInterfacesAndSelfTo<DogsModel>().AsSingle();
             Container.BindInterfacesAndSelfTo<DogsPresenter>().AsSingle().WithArguments(_dogListView, _dogsButton);
-            Container.BindInterfacesTo<Mediator>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<Mediator>().AsSingle();
             Container.BindInterfacesTo<DogPopupPresenter>().AsSingle().WithArguments(_dogPopup).NonLazy();
         }
     }

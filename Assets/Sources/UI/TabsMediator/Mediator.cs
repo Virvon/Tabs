@@ -19,8 +19,6 @@ namespace Sources.UI.TabsMediator
         {
             _weatherPresenter.SetMediator(this);
             _dogsPresenter.SetMediator(this);
-            
-            Notify(_weatherPresenter);
         }
 
         public void Notify(TabPresenter tabPresenter)
@@ -32,5 +30,8 @@ namespace Sources.UI.TabsMediator
             else
                 _weatherPresenter.HideTab();
         }
+
+        public void ShowStartTab() =>
+            Notify(_weatherPresenter);
     }
 }
