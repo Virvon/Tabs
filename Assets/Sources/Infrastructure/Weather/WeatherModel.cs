@@ -13,14 +13,14 @@ namespace Sources.Infrastructure.Weather
     {
         private const int RequestCooldown = 5;
 
-        private readonly ServerRequestQueue _requstQueue;
+        private readonly ServerRequestQueue _requestQueue;
         private readonly List<ServerRequest> _requests;
 
         private float passedTime;
 
-        public WeatherModel(ServerRequestQueue requstQueue)
+        public WeatherModel(ServerRequestQueue requestQueue)
         {
-            _requstQueue = requstQueue;
+            _requestQueue = requestQueue;
 
             _requests = new();
         }
@@ -48,7 +48,7 @@ namespace Sources.Infrastructure.Weather
                 ServerRequest request = new(webRequest);
                 _requests.Add(request);
                 
-                string jsonResponse = await _requstQueue.EnqueueRequest(request);
+                string jsonResponse = await _requestQueue.EnqueueRequest(request);
                 
                 Debug.Log("succsess " + jsonResponse);
                 

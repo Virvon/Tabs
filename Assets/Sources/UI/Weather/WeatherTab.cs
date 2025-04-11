@@ -19,7 +19,7 @@ namespace Sources.UI.Weather
 
         private void Start()
         {
-            Show();
+            Hide();
         }
 
         public void Show()
